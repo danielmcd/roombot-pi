@@ -17,4 +17,4 @@ export ROS_MASTER_URI=http://10.0.0.108:11311/
 #export ROS_MASTER_URI=http://192.168.2.3:11311/
 export ROS_IP=`hostname --all-ip-addresses | xargs`
 
-roslaunch roomba robot.launch > /home/pi/robot.log 2>&1 &
+roslaunch --wait roombot-pi robot.launch > /home/pi/robot.log 2>&1 &

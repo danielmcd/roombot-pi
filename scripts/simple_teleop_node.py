@@ -126,8 +126,8 @@ def main(args):
     rospy.init_node('simple_teleop_node')
     joy_sub = rospy.Subscriber("/joy", Joy, on_joy)
     #twist_pub = rospy.Publisher("/twist", Twist, queue_size=1)
-    twist_pub = rospy.Publisher("/twist", Twist)
-    buttons_pub = rospy.Publisher("/buttons", String)
+    twist_pub = rospy.Publisher("/twist", Twist, queue_size=5)
+    buttons_pub = rospy.Publisher("/buttons", String, queue_size=5)
     rate = rospy.Rate(10)  # 10 Hz
     while not rospy.is_shutdown():
 	rate.sleep()  # give ROS a chance to run
