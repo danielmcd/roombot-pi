@@ -1,0 +1,36 @@
+<launch>
+	<node name="raspicam_node" pkg="raspicam" type="raspicam_node" launch-prefix="$(find roomba)/start_capture.sh">
+<!--
+		<param name="width"  value="256" />
+		<param name="height" value="256" />
+		<param name="framerate" value="15" />
+		<param name="quality" value="90"/>
+-->
+		<param name="width"  value="600" />
+		<param name="height" value="400" />
+		<param name="framerate" value="10" />
+		<param name="quality" value="50"/>
+<!--
+		<param name="tf_prefix" value="/stereo/left"/>
+		<remap from="camera/camera_info" to="camera_info" />
+-->
+	</node>
+        <node name="serial_node" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyUSB0"/>
+        <node name="simple_teleop_node" pkg="roomba" type="simple_teleop_node.py"/>
+<!--
+        <node name="turret_teleop_node" pkg="roomba" type="turret_teleop_node.py"/>
+-->
+
+	<!-- NZBoy PWM Controller -->
+	<node name="nzboy_pwm" pkg="nzboy" type="i2cpwm_node.py" cwd="node"/>
+
+	<!-- Add AI and Speak Nodes -->
+<!--
+	<node name="ai_respond_node" pkg="ai" type="ai_respond_node.py" cwd="node"/>
+	<node name="listen_node" pkg="speech-and-hearing" type="listen_node.py" cwd="node">
+		<param name="device" value="0"/>
+	</node>
+	<node name="speak_node" pkg="speech-and-hearing" type="speak_node.py"/>
+-->
+</launch>
+
