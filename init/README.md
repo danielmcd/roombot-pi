@@ -6,7 +6,7 @@ To install the init scripts, copy them to the /etc/init.d directory.
 
 `cd catkin_ws/src/roombot-pi/init`
 
-`cp roscore roomba_teleop /etc/init.d`
+`sudo cp roscore roomba_teleop /etc/init.d`
 
 `sudo update-rc.d roscore defaults`
 
