@@ -37,14 +37,12 @@ def map(value, domainLow, domainHigh, rangeLow, rangeHigh):
     return ((value - domainLow) / (domainHigh - domainLow)) * (rangeHigh - rangeLow) + rangeLow
 
 last_twist = None
-tilt = 0
-last_dt = 0
-tilt_scale = 10
+tilt_scale = 1
 buttons_key = ""
 buttons = None
 
 def on_joy(joy):
-    global last_twist, last_dt, tilt, buttons, buttons_key
+    global last_twist, buttons, buttons_key
     key = "".join([str(b) for b in joy.buttons])
     if key != buttons_key:  # test if anything changed since last time
 	buttons = joy.buttons
@@ -73,47 +71,27 @@ def on_joy(joy):
     else:
 	radius = map(right_stick_left, -1, 0, -2, -500)  # rotate to the right
 
-    last_dt = tilt_scale * right_stick_up
-
     twist = Twist()
     twist.linear.y = velocity
-    twist.angular.x = tilt
+    twist.angular.x = tilt_scale * right_stick_up
     twist.angular.z = radius
 
     last_twist = twist
 
 def main(args):
-    global last_twist, last_dt, tilt, buttons
+    global last_twist, buttons
     rospy.init_node('simple_teleop_node')
-    joy_sub = rospy.Subscriber("/joy", Joy, on_joy)
-    twist_pub = rospy.Publisher("/twist", Twist, queue_size=5)
+    joy_sub = rospy.Subscriber("/joy10hz", Joy, on_joy)
+    twist_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=5)
     buttons_pub = rospy.Publisher("/buttons", String, queue_size=5)
     rate = rospy.Rate(10)  # 10 Hz
     while not rospy.is_shutdown():
 	rate.sleep()  # give ROS a chance to run
-	# publish buttons first to avoid clobbering twist message
 	if buttons is not None:
 	    buttons_pub.publish(" ".join([str(b) for b in buttons]))
 	    buttons = None
-	    rate.sleep()  # give ROS a chance to run
-	if abs(last_dt) > 0:
-	    tilt += last_dt
-	    if tilt > 70:
-		tilt = 70
-		last_dt = 0
-	    elif tilt < -30:
-		tilt = -30
-		last_dt = 0
-	    if last_twist is not None:
-		twist = last_twist
-	    else:
-		twist = Twist()
-	    twist.angular.x = tilt
-	    last_twist = None
-	    twist_pub.publish(twist)
 	elif last_twist is not None:
-	    twist = last_twist
-	    last_twist = None
+	    twist, last_twist = last_twist, None
 	    twist_pub.publish(twist)
 	    
 if __name__ == '__main__':
