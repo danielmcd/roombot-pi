@@ -8,33 +8,6 @@ from std_msgs.msg import String
 import math
 import sys
 
-##### pin assignments
-tilt_pin = 0
-pan_pin = 1
-
-class PanTilt:
-    def __init__(self):
-        try:
-            self.sb = open('/dev/servoblaster', 'w')
-        except (IOError):
-            print "*** ERROR ***"
-            print "Unable to open the device, check that servod is running"
-            print "To start servod, run: sudo /etc/init.d/servoblaster.sh start"
-            exit()
-
-    def pwm(self, pin, angle):
-        self.sb.write(str(pin) + '=' + str(int(angle)) + '\n')
-        self.sb.flush()
-
-    def go(self, pan_angle, tilt_angle):
-	self.pwm(tilt_pin, self.map_tilt_angle(tilt_angle))
-	self.pwm(pan_pin, self.map_pan_angle(pan_angle))
-
-    def map_tilt_angle(self, angle):
-	return map(angle, 0, 100, 200, 50)
-
-    def map_pan_angle(self, angle):
-	return map(angle, 0, 100, 176, 66)
 
 # joy axes
 #   0 is left stick left-right (+ left, - right)
@@ -67,13 +40,11 @@ last_twist = None
 tilt = 0
 last_dt = 0
 tilt_scale = 10
-rev_motor = 0
-fire = 0
 buttons_key = ""
 buttons = None
 
 def on_joy(joy):
-    global last_twist, last_dt, tilt, rev_motor, fire, buttons, buttons_key
+    global last_twist, last_dt, tilt, buttons, buttons_key
     key = "".join([str(b) for b in joy.buttons])
     if key != buttons_key:  # test if anything changed since last time
 	buttons = joy.buttons
@@ -85,19 +56,12 @@ def on_joy(joy):
     pov_left = joy.axes[5]
     pov_up = joy.axes[6]
 
-    rev_motor = joy.buttons[7]
-    fire = joy.buttons[2]
-
     if left_stick_left != 0 and right_stick_left == 0:
 	right_stick_left = left_stick_left
 
     vector_length = min(1.0, math.sqrt(left_stick_up*left_stick_up + right_stick_left*right_stick_left))
 
     velocity = int(100 * left_stick_up)  # drive forward at proportional velocity
-#    if left_stick_up >= 0:
-#	velocity = int(500 * vector_length)  # drive forward at proportional velocity
-#    elif left_stick_up < 0:
-#	velocity = int(-500 * vector_length)  # drive reverse at proportional velocity
 
     if right_stick_left == 0:
 	radius = 32767  # drive straight
@@ -105,10 +69,8 @@ def on_joy(joy):
 	radius = 1 if right_stick_left > 0 else -1  # rotate in place
 	velocity = int(100 * abs(right_stick_left))  # drive at proportional velocity
     elif right_stick_left > 0:
-	#radius = int(2000 * (1 - right_stick_left))  # rotate to the left
 	radius = map(right_stick_left, 0, 1, 500, 2)  # rotate to the left
     else:
-	#radius = int(-2000 * (1 + right_stick_left))  # rotate to the right
 	radius = map(right_stick_left, -1, 0, -2, -500)  # rotate to the right
 
     last_dt = tilt_scale * right_stick_up
@@ -121,11 +83,9 @@ def on_joy(joy):
     last_twist = twist
 
 def main(args):
-    global last_twist, last_dt, tilt, rev_motor, fire, buttons
-    #pan_tilt = PanTilt()
+    global last_twist, last_dt, tilt, buttons
     rospy.init_node('simple_teleop_node')
     joy_sub = rospy.Subscriber("/joy", Joy, on_joy)
-    #twist_pub = rospy.Publisher("/twist", Twist, queue_size=1)
     twist_pub = rospy.Publisher("/twist", Twist, queue_size=5)
     buttons_pub = rospy.Publisher("/buttons", String, queue_size=5)
     rate = rospy.Rate(10)  # 10 Hz
@@ -149,11 +109,9 @@ def main(args):
 	    else:
 		twist = Twist()
 	    twist.angular.x = tilt
-	    #pan_tilt.go(0, tilt)
 	    last_twist = None
 	    twist_pub.publish(twist)
 	elif last_twist is not None:
-	    #pan_tilt.go(0, tilt)
 	    twist = last_twist
 	    last_twist = None
 	    twist_pub.publish(twist)

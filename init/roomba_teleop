@@ -14,7 +14,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin:
 . /lib/init/vars.sh
 
 do_start () {
-	sudo -u pi /home/pi/catkin_ws/src/roomba/teleop_starter.sh&
+	sudo -u pi /home/pi/catkin_ws/src/roombot-pi/teleop_starter.sh&
 }
 
 case "$1" in
