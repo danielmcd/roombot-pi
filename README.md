@@ -3,7 +3,9 @@ Roombot source code for running on the Raspberry Pi
 
 ## Dependencies
 sudo apt install ros-kinetic-laser-scan-matcher
+
 sudo apt install ros-kinetic-gmapping
+
 sudo apt install ros-kinetic-map-server
 
 ## References
