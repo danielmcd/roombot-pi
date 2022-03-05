@@ -1,0 +1,37 @@
+<robot name="roombot">
+  <material name="light_gray">
+    <color rgba=".4 .4 .4 0.9" />
+  </material>
+  <material name="gray">
+    <color rgba=".2 .2 .2 1" />
+  </material>
+  <material name="white">
+    <color rgba=".9 .9 9 1" />
+  </material>
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+	<cylinder radius="0.17" length="0.075" />
+      </geometry>
+      <material name="light_gray"/>
+    </visual>
+  </link>
+
+  <link name="neato_laser">
+    <visual>
+      <origin xyz="0 0 -0.045" rpy="0 0 1.571" />
+      <geometry>
+	<cylinder radius="0.05" length="0.09" />
+      </geometry>
+      <material name="gray"/>
+    </visual>
+  </link>
+
+  <joint name="joint0" type="fixed">
+    <parent link="base_link"/>
+    <child link="neato_laser"/>
+    <!--5.5 cm forward, 14 cm up-->
+    <origin xyz="0 0.055 0.14" rpy="0 0 1.571"/>
+  </joint>
+</robot>

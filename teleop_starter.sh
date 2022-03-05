@@ -15,6 +15,7 @@ source /home/pi/catkin_ws/devel/setup.bash
 export ROS_MASTER_URI=http://10.0.0.108:11311/
 #export ROS_MASTER_URI=http://192.168.0.196:11311/
 #export ROS_MASTER_URI=http://192.168.2.3:11311/
-export ROS_IP=`hostname --all-ip-addresses | xargs`
+#export ROS_IP=`hostname --all-ip-addresses | xargs`
+export ROS_IP=10.0.0.108
 
 roslaunch --wait roombot-pi robot.launch > /home/pi/robot.log 2>&1 &

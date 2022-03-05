@@ -51,21 +51,22 @@ def on_joy(joy):
     left_stick_up = joy.axes[1]
     right_stick_up = joy.axes[3]
     right_stick_left = joy.axes[4]
-    pov_left = joy.axes[5]
-    pov_up = joy.axes[6]
+    # pov_left = joy.axes[5]
+    # pov_up = joy.axes[6]
 
     if left_stick_left != 0 and right_stick_left == 0:
 	right_stick_left = left_stick_left
 
     vector_length = min(1.0, math.sqrt(left_stick_up*left_stick_up + right_stick_left*right_stick_left))
 
-    velocity = int(100 * left_stick_up)  # drive forward at proportional velocity
+    max_velocity = 200
+    velocity = int(max_velocity * left_stick_up)  # drive forward at proportional velocity
 
     if right_stick_left == 0:
 	radius = 32767  # drive straight
     elif left_stick_up == 0:
 	radius = 1 if right_stick_left > 0 else -1  # rotate in place
-	velocity = int(100 * abs(right_stick_left))  # drive at proportional velocity
+	velocity = int(max_velocity * abs(right_stick_left))  # drive at proportional velocity
     elif right_stick_left > 0:
 	radius = map(right_stick_left, 0, 1, 500, 2)  # rotate to the left
     else:
